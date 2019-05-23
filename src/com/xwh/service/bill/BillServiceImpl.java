@@ -20,6 +20,7 @@ public class BillServiceImpl implements BillService {
 	public List<Bill> getBillList(String name, int id, int isPay) {
 		try {
 			System.out.println("1243");
+			System.out.println("和福克斯的会客室");
 			return billMapper.getBillList(name, id, isPay);
 		} catch (RuntimeException e) {
 			e.printStackTrace();
