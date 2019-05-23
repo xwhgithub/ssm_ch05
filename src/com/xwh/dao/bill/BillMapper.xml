@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xwh.dao.bill.BillMapper">
+	<select id="getBillList" resultMap="billList">
+		SELECT b.*,p.`proName` FROM `smbms_bill` b,`smbms_provider` p
+		WHERE b.`productName` LIKE CONCAT('%',#{name},'%') and b.`isPayment`=#{isPay} and
+		b.`providerId`=#{id} and b.`providerId`=p.`id`
+	</select>
+	
+	<resultMap type="Bill" id="billList">
+		<result property="billCode" column="billCode"/>
+		<result property="productName" column="productName"/>
+		<result property="providerName" column="proName"/>
+		<result property="totalPrice" column="totalPrice"/>
+		<result property="isPayment" column="isPayment"/>
+		<result property="creationDate" column="creationDate"/>
+	</resultMap>
+	
+	<!-- 上机3 -->
+	<select id="getBillByLike" resultMap="billResult">
+		SELECT b.*,p.`proCode`,p.`proName` ,p.`proContact`,p.`proPhone`,p.`id` as p_id  FROM `smbms_bill` b,`smbms_provider` p
+		 WHERE  b.`providerId`=p.`id`
+		 <!-- 第三章上机1 改造 -->
+		 <if test="name!=null and name!=''">
+		 	and b.`productName` LIKE CONCAT('%',#{name},'%') 
+		 </if>
+		  <if test="id!=null">
+		  	and b.`providerId`=#{id} 
+		  </if>
+		  <if test="isPay!=null">
+		  	and b.`isPayment`=#{isPay} 
+		  </if>
+		  order by `creationDate` desc limit #{pageNo},#{pageSize}
+	</select>
+	<!-- 引用Map -->
+	<resultMap type="Bill" id="billResult">
+		<id property="id" column="id"/>
+		<result property="billCode" column="billCode"/>
+		<result property="productName" column="productName"/>
+		<result property="totalPrice" column="totalPrice"/>
+		<result property="isPayment" column="isPayment"/>
+		<association property="provider" javaType="Provider" resultMap="providerMap"/>
+	</resultMap>
+	<resultMap type="Provider" id="providerMap">
+		<id property="id" column="p_id"/>
+		<result property="proCode" column="proCode"/>
+		<result property="proName" column="proName"/>
+		<result property="proContact" column="proContact"/>
+		<result property="proPhone" column="proPhone"/>
+	</resultMap>
+	<!-- 第三章上机5 -->
+	<select id="getBillListByProId" resultType="Bill">
+		SELECT * FROM `smbms_bill` WHERE `providerId` IN 
+		<foreach collection="list" item="proId" open="(" separator="," close=")">
+			#{proId}
+		</foreach>
+	</select>
+	<!-- 第三章上机6 -->
+	<select id="getByProIdCode" resultType="Bill">
+		SELECT * FROM `smbms_bill` WHERE `providerId` IN 
+		<foreach collection="pMap" item="pId" open="(" separator="," close=")">
+			#{pId}
+		</foreach>
+		<if test="billCode!=null and billCode!=''">
+			 and `billCode` like concat('%',#{billCode},'%')
+		</if>
+	</select>
+</mapper>
