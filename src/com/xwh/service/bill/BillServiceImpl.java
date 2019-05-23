@@ -15,10 +15,11 @@ public class BillServiceImpl implements BillService {
 	private BillMapper billMapper;
 	
 	/**
-	 * 按条件查询订单
+	 * 鎸夋潯浠舵煡璇㈣鍗�
 	 */
 	public List<Bill> getBillList(String name, int id, int isPay) {
 		try {
+			System.out.println("1243");
 			return billMapper.getBillList(name, id, isPay);
 		} catch (RuntimeException e) {
 			e.printStackTrace();
